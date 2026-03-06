@@ -1,0 +1,113 @@
+import { supabase } from '../supabase';
+import { PostgrestError } from '@supabase/supabase-js';
+
+export type TransactionType = 'INCOME' | 'EXPENSE';
+
+export interface TransactionRecord {
+  id: string | number;
+  title: string;
+  amount: number;
+  date: string;
+  category_id: string | null;
+  type: TransactionType;
+  category?: {
+    id: string | number;
+    name: string;
+    icon?: string | null;
+  } | null;
+}
+
+export interface TransactionInsertPayload {
+  title: string;
+  amount: number;
+  date: string;
+  category_id?: string | null;
+  type: TransactionType;
+}
+
+export interface TransactionUpdatePayload {
+  title?: string;
+  amount?: number;
+  date?: string;
+  category_id?: string | null;
+  type?: TransactionType;
+}
+
+export interface TransactionSummaryRecord {
+  id: string | number;
+  amount: number;
+  date: string;
+  type: TransactionType;
+}
+
+export async function fetchTransactionsQuery(limit?: number) {
+  let query = supabase
+    .from('transactions')
+    .select(
+      'id,title,amount,date,category_id,type,category:categories(id,name,icon)'
+    )
+    .order('date', { ascending: false });
+
+  if (typeof limit === 'number') {
+    query = query.limit(limit);
+  }
+
+  const { data, error } = await query;
+  return { data: data ?? [], error } as unknown as {
+    data: TransactionRecord[];
+    error: PostgrestError | null;
+  };
+}
+
+export async function insertTransaction(payload: TransactionInsertPayload) {
+  const { data, error } = await supabase
+    .from('transactions')
+    .insert(payload)
+    .select(
+      'id,title,amount,date,category_id,type,category:categories(id,name,icon)'
+    )
+    .single();
+  return { data, error } as {
+    data: TransactionRecord | null;
+    error: PostgrestError | null;
+  };
+}
+
+export async function fetchTransactionsByDateRange(
+  startDateIso: string,
+  endDateIso: string
+) {
+  const { data, error } = await supabase
+    .from('transactions')
+    .select('id,amount,date,type')
+    .gte('date', startDateIso)
+    .lte('date', endDateIso)
+    .order('date', { ascending: false });
+  return { data: (data ?? []) as TransactionSummaryRecord[], error } as {
+    data: TransactionSummaryRecord[];
+    error: PostgrestError | null;
+  };
+}
+
+export async function updateTransactionRecord(
+  id: string,
+  payload: TransactionUpdatePayload
+) {
+  const { data, error } = await supabase
+    .from('transactions')
+    .update(payload)
+    .eq('id', id)
+    .select(
+      'id,title,amount,date,category_id,type,category:categories(id,name,icon)'
+    )
+    .single();
+  return { data, error } as {
+    data: TransactionRecord | null;
+    error: PostgrestError | null;
+  };
+}
+
+export async function deleteTransactionRecord(id: string) {
+  const { error } = await supabase.from('transactions').delete().eq('id', id);
+  return { error };
+}

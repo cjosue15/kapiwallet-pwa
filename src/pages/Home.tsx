@@ -115,7 +115,7 @@ export function Home() {
 
       <button
         onClick={openCreate}
-        className="fixed right-5 bottom-5 w-16 h-16 rounded-full bg-brand-primary flex items-center justify-center shadow-lg"
+        className="fixed right-5 bottom-24 w-16 h-16 rounded-full bg-brand-primary flex items-center justify-center shadow-lg"
         style={{ boxShadow: '0 4px 8px rgba(180, 222, 0, 0.3)' }}
         aria-label="Add transaction"
       >

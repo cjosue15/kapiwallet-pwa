@@ -191,14 +191,15 @@ export function TransactionModal({
 
         <div className="flex flex-col items-center mb-12">
           <div className="flex items-center justify-center mb-2">
-            <span className="text-[60px] font-bold text-brand-text mr-1">S/</span>
+            <span className="text-[60px] font-bold text-brand-text mr-1 font-mono" style={{ fontFamily: "'JetBrains Mono', monospace" }}>S/</span>
             <input
               type="number"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="text-[80px] font-bold text-brand-text bg-transparent border-none outline-none w-40 text-center p-0 placeholder:text-center [-moz-appearance:textfield]"
+              className="text-[80px] font-bold text-brand-text bg-transparent border-none outline-none w-40 text-center p-0 placeholder:text-center [-moz-appearance:textfield] font-mono"
               placeholder="0"
               step="0.01"
+              style={{ fontFamily: "'JetBrains Mono', monospace" }}
             />
             <style>{`
               input[type="number"]::-webkit-outer-spin-button,

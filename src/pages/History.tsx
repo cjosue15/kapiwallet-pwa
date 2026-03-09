@@ -228,7 +228,7 @@ export function History() {
                       </div>
                       <div className="flex items-center gap-4">
                         <p
-                          className="text-xl font-bold"
+                          className="text-xl font-bold font-mono-numbers"
                           style={{
                             color: isIncome ? '#B4DE00' : '#FFFEFF'
                           }}

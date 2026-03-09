@@ -50,7 +50,7 @@ export function MonthlyOverviewCard({
       <div className='flex flex-col items-center mb-8'>
         <p className='text-sm font-normal text-[#8B8B8B] mb-3'>Total Balance</p>
         <p
-          className='text-[50px] font-bold text-brand-primary tracking-[-2px] transition-opacity duration-200'
+          className='text-[50px] font-bold text-brand-primary tracking-[-2px] transition-opacity duration-200 font-mono-numbers'
           style={{ opacity: loading ? 0.3 : 1 }}
         >
           {balanceDisplay}
@@ -63,14 +63,14 @@ export function MonthlyOverviewCard({
           style={{ opacity: loading ? 0.3 : 1 }}
         >
           <IconSymbol name='arrow-up' size={20} color='#B4DE00' />
-          <span className='text-base font-bold text-brand-text'>{incomeDisplay}</span>
+          <span className='text-base font-bold text-brand-text font-mono-numbers'>{incomeDisplay}</span>
         </div>
         <div
           className='flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full border border-brand-primary flex-1 max-w-[48%] transition-opacity duration-200'
           style={{ opacity: loading ? 0.3 : 1 }}
         >
           <IconSymbol name='arrow-down' size={20} color='#FF4D4D' />
-          <span className='text-base font-bold text-brand-text'>{expenseDisplay}</span>
+          <span className='text-base font-bold text-brand-text font-mono-numbers'>{expenseDisplay}</span>
         </div>
       </div>
 

@@ -109,7 +109,7 @@ export function Home() {
                   </p>
                 </div>
                 <p
-                  className="text-lg font-bold"
+                  className="text-lg font-bold font-mono-numbers"
                   style={{
                     color: transaction.isIncome ? '#B4DE00' : '#FFFEFF'
                   }}

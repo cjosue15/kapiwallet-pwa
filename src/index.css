@@ -8,6 +8,12 @@
   --color-brand-expense: #FF4D4D;
   --color-brand-text: #FFFEFF;
   --color-brand-text-primary: #000000;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+.font-mono-numbers {
+  font-family: 'JetBrains Mono', monospace;
+  font-variant-numeric: tabular-nums;
 }
 
 * {

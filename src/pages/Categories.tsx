@@ -117,7 +117,7 @@ export function Categories() {
 
         <div className="rounded-[24px] p-5 mb-5" style={{ backgroundColor: '#262727' }}>
           <p className="text-[14px] font-semibold text-[#8B8B8B]">Active categories</p>
-          <p className="text-[32px] font-bold text-brand-text">{categories.length}</p>
+          <p className="text-[32px] font-bold text-brand-text font-mono-numbers">{categories.length}</p>
           <p className="text-[13px] text-[#8B8B8B]">
             Tap "New" to add another bucket.
           </p>

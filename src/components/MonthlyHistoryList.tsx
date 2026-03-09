@@ -68,12 +68,12 @@ export function MonthlyHistoryList({ entries }: MonthlyHistoryListProps) {
               <p className="text-[13px] text-[#7A7B7D]">{subLabel}</p>
             </div>
             <div className="flex flex-col items-end">
-              <p className="text-[18px] font-bold text-brand-text">
+              <p className="text-[18px] font-bold text-brand-text font-mono-numbers">
                 S/ {entry.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
               </p>
               {entry.hasComparison ? (
                 <p
-                  className="text-[14px] font-semibold"
+                  className="text-[14px] font-semibold font-mono-numbers"
                   style={{ color: changePositive ? '#B4DE00' : '#E45865' }}
                 >
                   {changePositive ? '↑' : '↓'}S/ {changeValue.toLocaleString('en-US', { minimumFractionDigits: 2 })}

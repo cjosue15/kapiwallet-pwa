@@ -84,7 +84,7 @@ export function TotalBalanceCard({ entries, loading }: TotalBalanceCardProps) {
           : 'TOTAL BALANCE'}
       </p>
       <div className="flex items-center mb-4">
-        <p className="text-[42px] font-bold text-brand-text">{formattedBalance}</p>
+        <p className="text-[42px] font-bold text-brand-text font-mono-numbers">{formattedBalance}</p>
         {changePercentDisplay !== null ? (
           <div
             className="ml-3 rounded-full px-3 py-1"

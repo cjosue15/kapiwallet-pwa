@@ -26,11 +26,9 @@ export function MonthlyOverviewCard({
   error,
   onRefresh
 }: MonthlyOverviewCardProps) {
-  const balanceDisplay = loading
-    ? '--'
-    : `${balance < 0 ? '-' : ''}S/ ${formatCurrency(Math.abs(balance))}`;
-  const incomeDisplay = loading ? '--' : `S/ ${formatCurrency(totalIncome)}`;
-  const expenseDisplay = loading ? '--' : `S/ ${formatCurrency(totalExpense)}`;
+  const balanceDisplay = `${balance < 0 ? '-' : ''}S/ ${formatCurrency(Math.abs(balance))}`;
+  const incomeDisplay = `S/ ${formatCurrency(totalIncome)}`;
+  const expenseDisplay = `S/ ${formatCurrency(totalExpense)}`;
 
   return (
     <div className="bg-brand-card rounded-[24px] p-6 mb-8">
@@ -59,17 +57,26 @@ export function MonthlyOverviewCard({
 
       <div className="flex flex-col items-center mb-8">
         <p className="text-sm font-normal text-[#8B8B8B] mb-3">Total Balance</p>
-        <p className="text-[50px] font-bold text-brand-primary tracking-[-2px]">
+        <p 
+          className="text-[50px] font-bold text-brand-primary tracking-[-2px] transition-opacity duration-200"
+          style={{ opacity: loading ? 0.3 : 1 }}
+        >
           {balanceDisplay}
         </p>
       </div>
 
       <div className="flex justify-between gap-3 px-2">
-        <div className="flex items-center gap-1.5 px-4 py-2.5 rounded-full border border-brand-primary flex-1 max-w-[48%]">
+        <div 
+          className="flex items-center gap-1.5 px-4 py-2.5 rounded-full border border-brand-primary flex-1 max-w-[48%] transition-opacity duration-200"
+          style={{ opacity: loading ? 0.3 : 1 }}
+        >
           <IconSymbol name="arrow-up" size={20} color="#B4DE00" />
           <span className="text-base font-bold text-brand-text">{incomeDisplay}</span>
         </div>
-        <div className="flex items-center gap-1.5 px-4 py-2.5 rounded-full border border-brand-primary flex-1 max-w-[48%]">
+        <div 
+          className="flex items-center gap-1.5 px-4 py-2.5 rounded-full border border-brand-primary flex-1 max-w-[48%] transition-opacity duration-200"
+          style={{ opacity: loading ? 0.3 : 1 }}
+        >
           <IconSymbol name="arrow-down" size={20} color="#FF4D4D" />
           <span className="text-base font-bold text-brand-text">{expenseDisplay}</span>
         </div>

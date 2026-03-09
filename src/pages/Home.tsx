@@ -65,7 +65,17 @@ export function Home() {
         </div>
 
         {recentTransactionsLoading ? (
-          <p className="text-sm text-[#8B8B8B] text-center py-4">Loading transactions...</p>
+          <div className="space-y-3 opacity-30">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="flex items-center p-4 rounded-[16px] bg-brand-card animate-pulse">
+                <div className="w-12 h-12 rounded-[12px] bg-[#3A3B3B] mr-4" />
+                <div className="flex-1">
+                  <div className="h-4 w-24 bg-[#3A3B3B] rounded mb-2" />
+                  <div className="h-3 w-16 bg-[#3A3B3B] rounded" />
+                </div>
+              </div>
+            ))}
+          </div>
         ) : recentError ? (
           <p className="text-sm text-[#8B8B8B] text-center py-4">{recentError}</p>
         ) : formattedTransactions.length === 0 ? (

@@ -196,10 +196,17 @@ export function TransactionModal({
               type="number"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="text-[80px] font-bold text-brand-text bg-transparent border-none outline-none w-40 text-left p-0"
+              className="text-[80px] font-bold text-brand-text bg-transparent border-none outline-none w-40 text-center p-0 placeholder:text-center [-moz-appearance:textfield]"
               placeholder="0"
               step="0.01"
             />
+            <style>{`
+              input[type="number"]::-webkit-outer-spin-button,
+              input[type="number"]::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+              }
+            `}</style>
           </div>
           <span className="text-xs font-normal text-[#666666] tracking-[2px]">ENTER AMOUNT</span>
         </div>

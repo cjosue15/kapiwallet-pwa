@@ -205,7 +205,7 @@ export function Categories() {
 
       <button
         onClick={openCreateModal}
-        className="fixed right-5 bottom-5 flex items-center gap-2 px-5 py-3 rounded-[14px] bg-brand-primary shadow-lg"
+        className="fixed right-5 bottom-24 flex items-center gap-2 px-5 py-3 rounded-[14px] bg-brand-primary shadow-lg"
         style={{ boxShadow: '0 6px 12px rgba(180, 222, 0, 0.3)' }}
       >
         <IconSymbol name="add" size={20} color="#000000" />

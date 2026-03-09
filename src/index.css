@@ -45,3 +45,115 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #4A4B4B;
 }
+
+.rdp {
+  --rdp-accent-color: #B4DE00;
+  --rdp-background-color: #262727;
+  margin: 0;
+}
+
+.custom-day-picker {
+  color-scheme: dark;
+}
+
+.custom-day-picker .rdp {
+  --rdp-months-gap: 0;
+  --rdp-days-gap: 0;
+  --rdp-day-width: 40px;
+  --rdp-day-height: 40px;
+}
+
+.custom-day-picker .rdp-months {
+  justify-content: center;
+}
+
+.custom-day-picker .rdp-month {
+  width: 100%;
+}
+
+.custom-day-picker .rdp-caption {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 0 16px 0;
+  margin-bottom: 8px;
+}
+
+.custom-day-picker .rdp-caption_label {
+  font-size: 18px;
+  font-weight: 600;
+  color: #FFFEFF;
+}
+
+.custom-day-picker .rdp-nav {
+  display: flex;
+  align-items: center;
+}
+
+.custom-day-picker .rdp-nav_button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  color: #FFFEFF;
+  cursor: pointer;
+}
+
+.custom-day-picker .rdp-nav_button:hover {
+  background-color: #3A3B3B;
+}
+
+.custom-day-picker .rdp-head_cell {
+  font-size: 12px;
+  font-weight: 500;
+  color: #8B8B8B;
+  text-transform: uppercase;
+  padding: 0 0 8px 0;
+}
+
+.custom-day-picker .rdp-day {
+  font-size: 14px;
+  font-weight: 500;
+  color: #FFFEFF;
+  border-radius: 8px;
+}
+
+.custom-day-picker .rdp-day_button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  color: #FFFEFF;
+  cursor: pointer;
+}
+
+.custom-day-picker .rdp-day_button:hover {
+  background-color: #3A3B3B;
+}
+
+.custom-day-picker .rdp-day_selected:not([disabled]) {
+  background-color: #B4DE00;
+  color: #000000;
+}
+
+.custom-day-picker .rdp-day_selected:hover {
+  background-color: #A0C900;
+}
+
+.custom-day-picker .rdp-day_today:not([disabled]) {
+  font-weight: 700;
+  border: 1px solid #B4DE00;
+}
+
+.custom-day-picker .rdp-day_outside {
+  color: #4A4B4B;
+}
+
+.custom-day-picker .rdp-day_disabled {
+  color: #4A4B4B;
+  cursor: not-allowed;
+}

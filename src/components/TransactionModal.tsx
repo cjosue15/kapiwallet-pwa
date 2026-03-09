@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { IconSymbol } from './IconSymbol';
+import { DatePickerModal } from './DatePickerModal';
 import { useCategories } from '../hooks/useCategories';
 
 export interface TransactionFormValues {
@@ -35,13 +36,18 @@ export function TransactionModal({
 }: TransactionModalProps) {
   const { categories, loading: categoriesLoading, refreshCategories } = useCategories();
 
-  const [transactionType, setTransactionType] = useState<'income' | 'expense'>('expense');
-  const [amount, setAmount] = useState('');
-  const [note, setNote] = useState('');
-  const [selectedCategoryName, setSelectedCategoryName] = useState('');
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
-  const [transactionDate, setTransactionDate] = useState(new Date());
+  const [transactionType, setTransactionType] = useState<'income' | 'expense'>(() => 
+    initialValues?.type === 'income' ? 'income' : 'expense'
+  );
+  const [amount, setAmount] = useState(() => 
+    initialValues?.amount ? String(Math.abs(initialValues.amount)) : ''
+  );
+  const [note, setNote] = useState(() => initialValues?.note ?? '');
+  const [selectedCategoryName, setSelectedCategoryName] = useState(() => initialValues?.category ?? '');
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(() => initialValues?.categoryId ?? null);
+  const [transactionDate, setTransactionDate] = useState(() => initialValues?.date ?? new Date());
   const [categoryPickerVisible, setCategoryPickerVisible] = useState(false);
+  const [datePickerVisible, setDatePickerVisible] = useState(false);
 
   const formattedDate = useMemo(() => {
     return transactionDate.toLocaleDateString('en-US', {
@@ -64,24 +70,6 @@ export function TransactionModal({
     setTransactionDate(new Date());
     setCategoryPickerVisible(false);
   }, []);
-
-  useEffect(() => {
-    if (!visible) {
-      resetForm();
-    }
-  }, [visible, resetForm]);
-
-  useEffect(() => {
-    if (!visible || mode !== 'edit' || !initialValues) {
-      return;
-    }
-    setTransactionType(initialValues.type);
-    setAmount(initialValues.amount ? String(Math.abs(initialValues.amount)) : '');
-    setNote(initialValues.note || '');
-    setSelectedCategoryName(initialValues.category || '');
-    setSelectedCategoryId(initialValues.categoryId ?? null);
-    setTransactionDate(initialValues.date);
-  }, [visible, mode, initialValues]);
 
   useEffect(() => {
     if (visible) {
@@ -241,16 +229,7 @@ export function TransactionModal({
         </button>
 
         <button
-          onClick={() => {
-            const input = document.createElement('input');
-            input.type = 'date';
-            input.value = transactionDate.toISOString().split('T')[0];
-            input.onchange = (e) => {
-              const date = new Date((e.target as HTMLInputElement).value);
-              setTransactionDate(date);
-            };
-            input.click();
-          }}
+          onClick={() => setDatePickerVisible(true)}
           className="flex items-center gap-4 w-full mb-8 border-b border-[#3A3B3B] pb-4"
         >
           <IconSymbol name="calendar" size={20} color="#666666" />
@@ -316,6 +295,17 @@ export function TransactionModal({
             </div>
           </div>
         )}
+
+        <DatePickerModal
+          visible={datePickerVisible}
+          selected={transactionDate}
+          onSelect={(date) => {
+            if (date) {
+              setTransactionDate(date);
+            }
+          }}
+          onClose={() => setDatePickerVisible(false)}
+        />
       </div>
     </div>
   );

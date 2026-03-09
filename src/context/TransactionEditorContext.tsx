@@ -101,6 +101,7 @@ export function TransactionEditorProvider({ children }: { children: ReactNode })
     <TransactionEditorContext.Provider value={contextValue}>
       {children}
       <TransactionModal
+        key={editingTransaction?.id ?? 'new'}
         visible={visible}
         onClose={close}
         onSave={handleSave}

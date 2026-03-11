@@ -6,11 +6,7 @@ interface SwipeableRowProps {
   onDelete?: () => void;
 }
 
-export function SwipeableRow({
-  children,
-  onEdit,
-  onDelete
-}: SwipeableRowProps) {
+export function SwipeableRow({ children, onEdit, onDelete }: SwipeableRowProps) {
   const [translateX, setTranslateX] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const startX = useRef(0);
@@ -145,28 +141,23 @@ export function SwipeableRow({
     document.addEventListener('mouseup', handleMouseUp);
   };
 
-  const close = () => {
-    setTranslateX(0);
-    setIsOpen(false);
-  };
-
   // Calculate button visibility based on translateX
   const editButtonVisible = translateX > 10;
   const deleteButtonVisible = translateX < -10;
 
   return (
-    <div ref={rowRef} className="relative overflow-hidden rounded-[20px]">
+    <div ref={rowRef} className='relative overflow-hidden rounded-[20px]'>
       {/* Left side - Edit button (shows on swipe right) */}
       {onEdit && (
         <div
-          className="flex absolute inset-y-0 left-0 items-center justify-end w-[80px] pr-2 pointer-events-none"
+          className='flex absolute inset-y-0 left-0 items-center justify-end w-[80px] pr-2 pointer-events-none'
           style={{
             opacity: editButtonVisible ? 1 : 0,
             transition: 'opacity 0.2s',
           }}
         >
-          <div className="bg-[#3A3A3A] px-3 py-2 rounded-lg">
-            <span className="text-sm font-semibold text-brand-text">Edit</span>
+          <div className='bg-[#3A3A3A] px-3 py-2 rounded-lg'>
+            <span className='text-sm font-semibold text-brand-text'>Edit</span>
           </div>
         </div>
       )}
@@ -174,14 +165,14 @@ export function SwipeableRow({
       {/* Right side - Delete button (shows on swipe left) */}
       {onDelete && (
         <div
-          className="flex absolute inset-y-0 right-0 items-center justify-start w-[80px] pl-2 pointer-events-none"
+          className='flex absolute inset-y-0 right-0 items-center justify-start w-[80px] pl-2 pointer-events-none'
           style={{
             opacity: deleteButtonVisible ? 1 : 0,
             transition: 'opacity 0.2s',
           }}
         >
-          <div className="bg-brand-primary px-3 py-2 rounded-lg">
-            <span className="text-sm font-semibold text-brand-text-primary">Delete</span>
+          <div className='bg-brand-primary px-3 py-2 rounded-lg'>
+            <span className='text-sm font-semibold text-brand-text-primary'>Delete</span>
           </div>
         </div>
       )}

@@ -1,4 +1,4 @@
-import { useRef, useState, type ReactNode } from 'react';
+import { useRef, useState, useEffect, type ReactNode } from 'react';
 
 interface SwipeableRowProps {
   children: ReactNode;
@@ -11,13 +11,29 @@ export function SwipeableRow({
   onEdit,
   onDelete
 }: SwipeableRowProps) {
-  const [isOpen, setIsOpen] = useState(false);
   const [translateX, setTranslateX] = useState(0);
+  const [isOpen, setIsOpen] = useState(false);
   const startX = useRef(0);
   const currentX = useRef(0);
+  const rowRef = useRef<HTMLDivElement>(null);
 
-  const SWIPE_THRESHOLD = 80;
+  const SWIPE_THRESHOLD = 75;
   const MAX_SWIPE = 160;
+
+  // Close on click outside
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (rowRef.current && !rowRef.current.contains(e.target as Node)) {
+        setTranslateX(0);
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [isOpen]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     startX.current = e.touches[0].clientX;
@@ -27,43 +43,58 @@ export function SwipeableRow({
   const handleTouchMove = (e: React.TouchEvent) => {
     const deltaX = e.touches[0].clientX - startX.current;
 
+    // Allow swipe in both directions when closed, and reverse when open
     if (isOpen) {
-      // Already open, can swipe back to close
-      if (deltaX < 0) {
-        setTranslateX(Math.max(deltaX, -MAX_SWIPE));
+      // When open, swipe in opposite direction to close
+      const currentDirection = translateX > 0 ? 1 : -1;
+      if (deltaX * currentDirection < 0) {
+        // Swiping in opposite direction
+        setTranslateX(translateX + deltaX * 0.5);
       }
     } else {
-      // Not open, swipe right to open edit, left to open delete
-      if (deltaX > 0) {
-        setTranslateX(Math.min(deltaX, MAX_SWIPE));
-      }
+      // When closed, allow both directions
+      const clampedDelta = Math.max(-MAX_SWIPE, Math.min(deltaX, MAX_SWIPE));
+      setTranslateX(clampedDelta);
     }
 
     currentX.current = deltaX;
   };
 
   const handleTouchEnd = () => {
-    if (currentX.current > SWIPE_THRESHOLD) {
-      // Swipe right = Edit
-      setTranslateX(MAX_SWIPE);
-      setIsOpen(true);
-    } else if (currentX.current < -SWIPE_THRESHOLD) {
-      // Swipe left = Delete
-      setTranslateX(-MAX_SWIPE);
-      setIsOpen(true);
-    } else if (isOpen) {
-      // Keep open
-      if (translateX > 0) {
-        setTranslateX(MAX_SWIPE);
+    const threshold = SWIPE_THRESHOLD;
+
+    if (isOpen) {
+      // If already open, close if swiped enough in any direction
+      if (Math.abs(currentX.current) > threshold) {
+        setTranslateX(0);
+        setIsOpen(false);
       } else {
-        setTranslateX(-MAX_SWIPE);
+        // Keep current position
+        setTranslateX(translateX > 0 ? MAX_SWIPE : -MAX_SWIPE);
       }
     } else {
-      setTranslateX(0);
+      // Not open yet
+      if (currentX.current > threshold) {
+        // Swipe right = Edit
+        setTranslateX(MAX_SWIPE);
+        setIsOpen(true);
+      } else if (currentX.current < -threshold) {
+        // Swipe left = Delete
+        setTranslateX(-MAX_SWIPE);
+        setIsOpen(true);
+      } else {
+        // Didn't swipe enough, snap back
+        setTranslateX(0);
+      }
     }
+
+    currentX.current = 0;
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
+    // Don't start drag if clicking on interactive elements
+    if ((e.target as HTMLElement).tagName === 'BUTTON') return;
+
     startX.current = e.clientX;
     currentX.current = 0;
 
@@ -71,35 +102,41 @@ export function SwipeableRow({
       const deltaX = moveEvent.clientX - startX.current;
 
       if (isOpen) {
-        if (deltaX < 0) {
-          setTranslateX(Math.max(deltaX, -MAX_SWIPE));
+        const currentDirection = translateX > 0 ? 1 : -1;
+        if (deltaX * currentDirection < 0) {
+          setTranslateX(translateX + deltaX * 0.5);
         }
       } else {
-        if (deltaX > 0) {
-          setTranslateX(Math.min(deltaX, MAX_SWIPE));
-        }
+        const clampedDelta = Math.max(-MAX_SWIPE, Math.min(deltaX, MAX_SWIPE));
+        setTranslateX(clampedDelta);
       }
 
       currentX.current = deltaX;
     };
 
     const handleMouseUp = () => {
-      if (currentX.current > SWIPE_THRESHOLD) {
-        setTranslateX(MAX_SWIPE);
-        setIsOpen(true);
-      } else if (currentX.current < -SWIPE_THRESHOLD) {
-        setTranslateX(-MAX_SWIPE);
-        setIsOpen(true);
-      } else if (isOpen) {
-        if (translateX > 0) {
-          setTranslateX(MAX_SWIPE);
+      const threshold = SWIPE_THRESHOLD;
+
+      if (isOpen) {
+        if (Math.abs(currentX.current) > threshold) {
+          setTranslateX(0);
+          setIsOpen(false);
         } else {
-          setTranslateX(-MAX_SWIPE);
+          setTranslateX(translateX > 0 ? MAX_SWIPE : -MAX_SWIPE);
         }
       } else {
-        setTranslateX(0);
+        if (currentX.current > threshold) {
+          setTranslateX(MAX_SWIPE);
+          setIsOpen(true);
+        } else if (currentX.current < -threshold) {
+          setTranslateX(-MAX_SWIPE);
+          setIsOpen(true);
+        } else {
+          setTranslateX(0);
+        }
       }
 
+      currentX.current = 0;
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
@@ -113,41 +150,39 @@ export function SwipeableRow({
     setIsOpen(false);
   };
 
+  // Calculate button visibility based on translateX
+  const editButtonVisible = translateX > 10;
+  const deleteButtonVisible = translateX < -10;
+
   return (
-    <div className="relative overflow-hidden rounded-[20px]">
+    <div ref={rowRef} className="relative overflow-hidden rounded-[20px]">
       {/* Left side - Edit button (shows on swipe right) */}
       {onEdit && (
         <div
-          className="flex absolute inset-y-0 left-0 w-[80px]"
-          style={{ transform: `translateX(${translateX - MAX_SWIPE}px)` }}
+          className="flex absolute inset-y-0 left-0 items-center justify-end w-[80px] pr-2 pointer-events-none"
+          style={{
+            opacity: editButtonVisible ? 1 : 0,
+            transition: 'opacity 0.2s',
+          }}
         >
-          <button
-            onClick={() => {
-              onEdit();
-              close();
-            }}
-            className="flex-1 flex items-center justify-center bg-[#3A3A3A]"
-          >
+          <div className="bg-[#3A3A3A] px-3 py-2 rounded-lg">
             <span className="text-sm font-semibold text-brand-text">Edit</span>
-          </button>
+          </div>
         </div>
       )}
 
       {/* Right side - Delete button (shows on swipe left) */}
       {onDelete && (
         <div
-          className="flex absolute inset-y-0 right-0 w-[80px]"
-          style={{ transform: `translateX(${translateX + MAX_SWIPE}px)` }}
+          className="flex absolute inset-y-0 right-0 items-center justify-start w-[80px] pl-2 pointer-events-none"
+          style={{
+            opacity: deleteButtonVisible ? 1 : 0,
+            transition: 'opacity 0.2s',
+          }}
         >
-          <button
-            onClick={() => {
-              onDelete();
-              close();
-            }}
-            className="flex-1 flex items-center justify-center bg-brand-primary"
-          >
+          <div className="bg-brand-primary px-3 py-2 rounded-lg">
             <span className="text-sm font-semibold text-brand-text-primary">Delete</span>
-          </button>
+          </div>
         </div>
       )}
 
@@ -157,7 +192,7 @@ export function SwipeableRow({
         onTouchEnd={handleTouchEnd}
         onMouseDown={handleMouseDown}
         style={{ transform: `translateX(${translateX}px)` }}
-        className="transition-transform duration-200 ease-out"
+        className={`transition-transform duration-200 ${!isOpen && translateX === 0 ? '' : 'duration-0'}`}
       >
         {children}
       </div>

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTransactions, type Transaction } from '../context/TransactionsContext';
 import { useTransactionEditor } from '../context/TransactionEditorContext';
 import { IconSymbol } from '../components/IconSymbol';
+import { SwipeableRow } from '../components/SwipeableRow';
 
 export function History() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -213,43 +214,33 @@ export function History() {
                     transaction.categoryName ||
                     (isIncome ? 'INCOME' : 'EXPENSE');
                   return (
-                    <div
-                      key={transaction.id}
-                      className="flex justify-between items-center p-5 rounded-[16px] mb-3"
-                      style={{ backgroundColor: '#262727' }}
-                    >
-                      <div className="flex-1">
-                        <p className="text-lg font-bold text-brand-text mb-1">
-                          {transaction.title || 'Quick Add'}
-                        </p>
-                        <p className="text-[13px] font-normal text-[#666666]">
-                          {formattedTime} • {categoryLabel}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <p
-                          className="text-xl font-bold font-mono-numbers"
-                          style={{
-                            color: isIncome ? '#B4DE00' : '#FFFEFF'
-                          }}
+                    <div key={transaction.id} className="mb-3">
+                      <SwipeableRow
+                        onEdit={() => openEdit(transaction)}
+                        onDelete={() => handleDelete(transaction.id)}
+                      >
+                        <div
+                          className="flex justify-between items-center p-5 rounded-[20px]"
+                          style={{ backgroundColor: '#262727' }}
                         >
-                          {`${transaction.amount > 0 ? '+' : ''}S/ ${Math.abs(transaction.amount).toFixed(2)}`}
-                        </p>
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => openEdit(transaction)}
-                            className="w-8 h-8 rounded-full bg-[#2B2B2B] flex items-center justify-center"
+                          <div className="flex-1">
+                            <p className="text-lg font-bold text-brand-text mb-1">
+                              {transaction.title || 'Quick Add'}
+                            </p>
+                            <p className="text-[13px] font-normal text-[#666666]">
+                              {formattedTime} • {categoryLabel}
+                            </p>
+                          </div>
+                          <p
+                            className="text-xl font-bold font-mono-numbers"
+                            style={{
+                              color: isIncome ? '#B4DE00' : '#FFFEFF'
+                            }}
                           >
-                            <IconSymbol name="create" size={14} color="#FFFEFF" />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(transaction.id)}
-                            className="w-8 h-8 rounded-full bg-brand-primary flex items-center justify-center"
-                          >
-                            <IconSymbol name="trash" size={14} color="#000000" />
-                          </button>
+                            {`${transaction.amount > 0 ? '+' : ''}S/ ${Math.abs(transaction.amount).toFixed(2)}`}
+                          </p>
                         </div>
-                      </div>
+                      </SwipeableRow>
                     </div>
                   );
                 })}

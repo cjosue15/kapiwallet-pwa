@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useCategories, type Category } from '../hooks/useCategories';
 import { IconSymbol } from '../components/IconSymbol';
+import { SwipeableRow } from '../components/SwipeableRow';
 
 const AVAILABLE_ICONS = [
   'restaurant', 'car', 'bag-handle', 'film', 'shield-checkmark',
@@ -163,41 +164,32 @@ export function Categories() {
         ) : (
           <div className="space-y-4">
             {filteredCategories.map((category) => (
-              <div
+              <SwipeableRow
                 key={category.id}
-                className="rounded-[20px] p-5"
-                style={{ backgroundColor: '#262727' }}
+                onEdit={() => handleEditCategory(category)}
+                onDelete={() => handleDeleteCategory(category.id)}
               >
-                <div className="flex items-center gap-4">
-                  <div
-                    className="w-14 h-14 rounded-[12px] flex items-center justify-center"
-                    style={{ backgroundColor: category.iconBg }}
-                  >
-                    <IconSymbol name={category.icon || 'apps'} size={24} color="#B4DE00" />
+                <div
+                  className="rounded-[20px] p-5"
+                  style={{ backgroundColor: '#262727' }}
+                >
+                  <div className="flex items-center gap-4">
+                    <div
+                      className="w-14 h-14 rounded-[12px] flex items-center justify-center"
+                      style={{ backgroundColor: category.iconBg }}
+                    >
+                      <IconSymbol name={category.icon || 'apps'} size={24} color="#B4DE00" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-lg font-bold text-brand-text">{category.name}</p>
+                      <p className="text-[13px] text-[#8B8B8B]">Swipe to edit</p>
+                    </div>
+                    <button onClick={() => handleEditCategory(category)}>
+                      <IconSymbol name="chevron-forward" size={20} color="#666666" />
+                    </button>
                   </div>
-                  <div className="flex-1">
-                    <p className="text-lg font-bold text-brand-text">{category.name}</p>
-                    <p className="text-[13px] text-[#8B8B8B]">Tap to edit</p>
-                  </div>
-                  <button onClick={() => handleEditCategory(category)}>
-                    <IconSymbol name="chevron-forward" size={20} color="#666666" />
-                  </button>
                 </div>
-                <div className="flex gap-3 mt-4">
-                  <button
-                    onClick={() => handleEditCategory(category)}
-                    className="flex-1 py-2.5 rounded-[12px] bg-[#2B2B2B] text-sm font-semibold text-brand-text"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDeleteCategory(category.id)}
-                    className="flex-1 py-2.5 rounded-[12px] bg-brand-primary text-sm font-semibold text-brand-text-primary"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
+              </SwipeableRow>
             ))}
           </div>
         )}

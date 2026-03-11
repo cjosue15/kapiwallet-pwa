@@ -31,7 +31,7 @@ export function MonthlyOverviewCard({
   const expenseDisplay = `S/ ${formatCurrency(totalExpense)}`;
 
   return (
-    <div className='bg-brand-card rounded-[24px] p-6 mb-8'>
+    <div className='bg-brand-card rounded-[24px] p-4 mb-8'>
       <div className='flex justify-between items-start mb-12'>
         <div>
           <p className='text-[11px] font-normal text-[#8B8B8B] tracking-[1.5px] mb-1'>MONTHLY OVERVIEW</p>
@@ -50,27 +50,27 @@ export function MonthlyOverviewCard({
       <div className='flex flex-col items-center mb-8'>
         <p className='text-sm font-normal text-[#8B8B8B] mb-3'>Total Balance</p>
         <p
-          className='text-[50px] font-bold text-brand-primary tracking-[-2px] transition-opacity duration-200 font-mono-numbers'
+          className='text-[40px] font-bold text-brand-primary tracking-[-2px] transition-opacity duration-200 font-mono-numbers'
           style={{ opacity: loading ? 0.3 : 1 }}
         >
           {balanceDisplay}
         </p>
       </div>
 
-      <div className='flex justify-between gap-3 px-2'>
+      <div className='flex justify-between gap-2 sm:gap-3'>
         <div
-          className='flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full border border-brand-primary flex-1 max-w-[48%] transition-opacity duration-200'
+          className='flex items-center justify-center gap-1 sm:gap-1.5 px-2 sm:px-4 py-2 rounded-full border border-brand-primary flex-1 max-w-[48%] transition-opacity duration-200'
           style={{ opacity: loading ? 0.3 : 1 }}
         >
-          <IconSymbol name='arrow-up' size={20} color='#B4DE00' />
-          <span className='text-base font-bold text-brand-text font-mono-numbers'>{incomeDisplay}</span>
+          <IconSymbol name='arrow-up' size={16} color='#B4DE00' />
+          <span className='text-xs sm:text-sm md:text-base font-bold text-brand-text font-mono-numbers'>{incomeDisplay}</span>
         </div>
         <div
-          className='flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full border border-brand-primary flex-1 max-w-[48%] transition-opacity duration-200'
+          className='flex items-center justify-center gap-1 sm:gap-1.5 px-2 sm:px-4 py-2 rounded-full border border-brand-primary flex-1 max-w-[48%] transition-opacity duration-200'
           style={{ opacity: loading ? 0.3 : 1 }}
         >
-          <IconSymbol name='arrow-down' size={20} color='#FF4D4D' />
-          <span className='text-base font-bold text-brand-text font-mono-numbers'>{expenseDisplay}</span>
+          <IconSymbol name='arrow-down' size={16} color='#FF4D4D' />
+          <span className='text-xs sm:text-sm md:text-base font-bold text-brand-text font-mono-numbers'>{expenseDisplay}</span>
         </div>
       </div>
 

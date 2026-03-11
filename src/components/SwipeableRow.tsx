@@ -150,30 +150,46 @@ export function SwipeableRow({ children, onEdit, onDelete }: SwipeableRowProps) 
       {/* Left side - Edit button (shows on swipe right) */}
       {onEdit && (
         <div
-          className='flex absolute inset-y-0 left-0 items-center justify-end w-[80px] pr-2 pointer-events-none'
+          className='flex absolute inset-y-0 left-0 items-center justify-end w-[80px] pr-2'
           style={{
             opacity: editButtonVisible ? 1 : 0,
             transition: 'opacity 0.2s',
+            pointerEvents: editButtonVisible ? 'auto' : 'none',
           }}
         >
-          <div className='bg-[#3A3A3A] px-3 py-2 rounded-lg'>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit();
+              close();
+            }}
+            className='bg-[#3A3A3A] px-3 py-2 rounded-lg active:scale-95 transition-transform'
+          >
             <span className='text-sm font-semibold text-brand-text'>Edit</span>
-          </div>
+          </button>
         </div>
       )}
 
       {/* Right side - Delete button (shows on swipe left) */}
       {onDelete && (
         <div
-          className='flex absolute inset-y-0 right-0 items-center justify-start w-[80px] pl-2 pointer-events-none'
+          className='flex absolute inset-y-0 right-0 items-center justify-start w-[80px] pl-2'
           style={{
             opacity: deleteButtonVisible ? 1 : 0,
             transition: 'opacity 0.2s',
+            pointerEvents: deleteButtonVisible ? 'auto' : 'none',
           }}
         >
-          <div className='bg-brand-primary px-3 py-2 rounded-lg'>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete();
+              close();
+            }}
+            className='bg-brand-primary px-3 py-2 rounded-lg active:scale-95 transition-transform'
+          >
             <span className='text-sm font-semibold text-brand-text-primary'>Delete</span>
-          </div>
+          </button>
         </div>
       )}
 

@@ -4,7 +4,9 @@ import { InsightsOverflowMenu } from '../components/InsightsOverflowMenu';
 import { MonthlyHistoryChart } from '../components/MonthlyHistoryChart';
 import { MonthlyHistoryList } from '../components/MonthlyHistoryList';
 import { TotalBalanceCard } from '../components/TotalBalanceCard';
+import { CategoryPieChart } from '../components/CategoryPieChart';
 import { useMonthlyHistory } from '../hooks/useMonthlyHistory';
+import { useCategoryInsights } from '../hooks/useCategoryInsights';
 import { IconSymbol } from '../components/IconSymbol';
 
 export function Insights() {
@@ -14,6 +16,12 @@ export function Insights() {
     error: historyError,
     refresh: refreshMonthlyHistory
   } = useMonthlyHistory();
+  const {
+    incomeCategories,
+    expenseCategories,
+    loading: categoryLoading,
+    refresh: refreshCategories
+  } = useCategoryInsights();
   const [quickFilter, setQuickFilter] = useState<InsightsQuickFilter>('all');
 
   const displayEntries = useMemo(() => {
@@ -35,6 +43,11 @@ export function Insights() {
       };
     });
   }, [monthlyHistoryEntries, quickFilter]);
+
+  const handleRefresh = () => {
+    refreshMonthlyHistory();
+    refreshCategories();
+  };
 
   return (
     <div className="min-h-screen bg-brand-background pb-10">
@@ -65,16 +78,43 @@ export function Insights() {
           </div>
         </div>
 
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="bg-brand-card rounded-[20px] p-4 border border-brand-background">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-[14px] font-bold text-brand-text">Income</h3>
+              <span className="text-[11px] text-[#B4DE00] font-semibold">BY CATEGORY</span>
+            </div>
+            <CategoryPieChart
+              categories={incomeCategories}
+              loading={categoryLoading}
+              type="income"
+            />
+          </div>
+
+          <div className="bg-brand-card rounded-[20px] p-4 border border-brand-background">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-[14px] font-bold text-brand-text">Expenses</h3>
+              <span className="text-[11px] text-[#FF4D4D] font-semibold">BY CATEGORY</span>
+            </div>
+            <CategoryPieChart
+              categories={expenseCategories}
+              loading={categoryLoading}
+              type="expense"
+            />
+          </div>
+        </div>
+
         <div className="flex justify-between items-center mb-3">
           <div>
             <h3 className="text-xl font-bold text-brand-text">Monthly History</h3>
             <p className="text-sm text-[#8F9091]">Compare recent periods</p>
           </div>
           <button
-            onClick={refreshMonthlyHistory}
-            disabled={historyLoading}
+            type="button"
+            onClick={handleRefresh}
+            disabled={historyLoading || categoryLoading}
             className={`w-9 h-9 rounded-full border border-[#2F3133] flex items-center justify-center transition-opacity ${
-              historyLoading ? 'opacity-60' : ''
+              historyLoading || categoryLoading ? 'opacity-60' : ''
             }`}
             aria-label="Refresh monthly history"
           >

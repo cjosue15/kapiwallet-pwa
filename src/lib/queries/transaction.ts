@@ -40,6 +40,15 @@ export interface TransactionSummaryRecord {
   type: TransactionType;
 }
 
+export interface CategorySummaryRecord {
+  category_id: string | null;
+  category_name: string | null;
+  category_icon: string | null;
+  total_amount: number;
+  transaction_count: number;
+  type: TransactionType;
+}
+
 export async function fetchTransactionsQuery(limit?: number) {
   let query = supabase
     .from('transactions')
@@ -110,4 +119,52 @@ export async function updateTransactionRecord(
 export async function deleteTransactionRecord(id: string) {
   const { error } = await supabase.from('transactions').delete().eq('id', id);
   return { error };
+}
+
+export async function fetchCategorySummary() {
+  const { data, error } = await supabase
+    .from('transactions')
+    .select(`
+      category_id,
+      category:categories(id, name, icon),
+      amount,
+      type
+    `)
+    .order('date', { ascending: false });
+
+  if (error) {
+    return { data: [] as CategorySummaryRecord[], error } as {
+      data: CategorySummaryRecord[];
+      error: PostgrestError | null;
+    };
+  }
+
+  const aggregated = new Map<string, CategorySummaryRecord>();
+
+  for (const row of data ?? []) {
+    const catId = row.category_id ?? 'uncategorized';
+    const catName = (row.category as { name?: string } | null)?.name ?? 'Uncategorized';
+    const catIcon = (row.category as { icon?: string } | null)?.icon ?? 'apps';
+    const key = `${catId}-${row.type}`;
+
+    if (aggregated.has(key)) {
+      const existing = aggregated.get(key)!;
+      existing.total_amount += Math.abs(row.amount);
+      existing.transaction_count += 1;
+    } else {
+      aggregated.set(key, {
+        category_id: row.category_id,
+        category_name: catName,
+        category_icon: catIcon,
+        total_amount: Math.abs(row.amount),
+        transaction_count: 1,
+        type: row.type
+      });
+    }
+  }
+
+  return {
+    data: Array.from(aggregated.values()),
+    error: null
+  };
 }

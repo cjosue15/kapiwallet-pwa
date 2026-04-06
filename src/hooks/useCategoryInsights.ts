@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { fetchCategorySummary, type CategorySummaryRecord } from '../lib/queries/transaction';
-import { useTransactions } from '../context/TransactionsContext';
 
 export interface CategoryInsight {
   id: string;
@@ -12,29 +11,68 @@ export interface CategoryInsight {
   type: 'INCOME' | 'EXPENSE';
 }
 
-export function useCategoryInsights() {
+const getLast6MonthsRange = () => {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+  const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  return {
+    startDate: start.toISOString().split('T')[0],
+    endDate: end.toISOString().split('T')[0]
+  };
+};
+
+const getMonthRange = (monthStartIso: string) => {
+  const [year, month] = monthStartIso.split('-').map(Number);
+  const startDate = new Date(year, month - 1, 1);
+  const endDate = new Date(year, month - 1, 1);
+  endDate.setMonth(endDate.getMonth() + 1);
+  endDate.setDate(0);
+  return {
+    startDate: startDate.toISOString().split('T')[0],
+    endDate: endDate.toISOString().split('T')[0]
+  };
+};
+
+export function useCategoryInsights(selectedMonthStart?: string | null) {
   const [records, setRecords] = useState<CategorySummaryRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { version } = useTransactions();
-
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    const { data, error: fetchError } = await fetchCategorySummary();
-    if (fetchError) {
-      console.error('Error fetching category summary', fetchError);
-      setError('No se pudo cargar el resumen por categorias.');
-      setRecords([]);
-    } else {
-      setRecords(data);
-    }
-    setLoading(false);
-  }, []);
 
   useEffect(() => {
+    let isMounted = true;
+
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+
+      let dateRange: { startDate: string; endDate: string };
+      if (selectedMonthStart) {
+        dateRange = getMonthRange(selectedMonthStart);
+      } else {
+        dateRange = getLast6MonthsRange();
+      }
+
+      const { data, error: fetchError } = await fetchCategorySummary(
+        dateRange.startDate,
+        dateRange.endDate
+      );
+      if (!isMounted) return;
+      if (fetchError) {
+        console.error('Error fetching category summary', fetchError);
+        setError('No se pudo cargar el resumen por categorias.');
+        setRecords([]);
+      } else {
+        setRecords(data);
+      }
+      setLoading(false);
+    };
+
     fetchData();
-  }, [fetchData, version]);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [selectedMonthStart]);
 
   const incomeCategories = useMemo(() => {
     const incomeRecords = records.filter((r) => r.type === 'INCOME');
@@ -69,6 +107,6 @@ export function useCategoryInsights() {
     expenseCategories,
     loading,
     error,
-    refresh: fetchData
+    refresh: () => {}
   };
 }

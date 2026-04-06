@@ -121,16 +121,30 @@ export async function deleteTransactionRecord(id: string) {
   return { error };
 }
 
-export async function fetchCategorySummary() {
-  const { data, error } = await supabase
+export async function fetchCategorySummary(
+  startDateIso?: string,
+  endDateIso?: string
+) {
+  let query = supabase
     .from('transactions')
     .select(`
       category_id,
       category:categories(id, name, icon),
       amount,
-      type
+      type,
+      date
     `)
     .order('date', { ascending: false });
+
+  if (startDateIso && endDateIso) {
+    query = query.gte('date', startDateIso).lte('date', endDateIso);
+  } else if (startDateIso) {
+    query = query.gte('date', startDateIso);
+  } else if (endDateIso) {
+    query = query.lte('date', endDateIso);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     return { data: [] as CategorySummaryRecord[], error } as {

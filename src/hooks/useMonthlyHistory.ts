@@ -9,34 +9,35 @@ import {
 export interface MonthlyHistoryEntry {
   label: string;
   month: string;
+  monthStart: string;
   amount: number;
   income: number;
   expense: number;
 }
 
-const normalizeToDay = (date: Date) => {
-  const normalized = new Date(date);
-  normalized.setHours(0, 0, 0, 0);
-  return normalized;
-};
-
 const buildEntry = (
   record: MonthlySummaryRecord
 ): MonthlyHistoryEntry & { timestamp: number } => {
-  const normalizedDate = normalizeToDay(new Date(record.month_start));
+  const dateStr = record.month_start.split('T')[0];
+  const [year, month, day] = dateStr.split('-').map(Number);
+  const normalizedDate = new Date(year, month - 1, day, 12, 0, 0);
   const label = normalizedDate.toLocaleDateString('en-US', {
     month: 'long',
     year: 'numeric'
   });
-  const month = normalizedDate
+  const monthShort = normalizedDate
     .toLocaleDateString('en-US', { month: 'short' })
     .toUpperCase();
   const incomeTotal = Number(record.income_total ?? 0);
   const expenseTotal = Number(record.expense_total ?? 0);
 
+  const [year2, month2] = record.month_start.split('T')[0].split('-');
+  const monthStartIso = `${year2}-${month2}-01`;
+
   return {
     label,
-    month,
+    month: monthShort,
+    monthStart: monthStartIso,
     amount: Number(record.net_total ?? 0),
     income: incomeTotal,
     expense: expenseTotal,
@@ -60,10 +61,13 @@ export function useMonthlyHistory() {
       setEntries([]);
       setError('No se pudo cargar el historial mensual.');
     } else {
-      const mapped = data
+      const sortedEntries = data
         .map((record) => buildEntry(record))
-        .sort((a, b) => a.timestamp - b.timestamp)
-        .map(({ timestamp, ...entry }) => entry);
+        .sort((a, b) => a.timestamp - b.timestamp);
+      const mapped: MonthlyHistoryEntry[] = sortedEntries.map(({ timestamp: _ts, ...rest }) => {
+        void _ts;
+        return rest as MonthlyHistoryEntry;
+      });
       setEntries(mapped);
     }
 

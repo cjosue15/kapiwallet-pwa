@@ -16,12 +16,20 @@ export function Insights() {
     error: historyError,
     refresh: refreshMonthlyHistory,
   } = useMonthlyHistory();
+  const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
+
+  const selectedMonthStart = useMemo(() => {
+    if (!selectedMonth) return null;
+    const entry = monthlyHistoryEntries.find((e) => e.label === selectedMonth);
+    return entry?.monthStart ?? null;
+  }, [selectedMonth, monthlyHistoryEntries]);
+
   const {
     incomeCategories,
     expenseCategories,
     loading: categoryLoading,
     refresh: refreshCategories,
-  } = useCategoryInsights();
+  } = useCategoryInsights(selectedMonthStart);
   const [quickFilter, setQuickFilter] = useState<InsightsQuickFilter>('all');
 
   const displayEntries = useMemo(() => {
@@ -89,11 +97,22 @@ export function Insights() {
             <div className='w-6 h-6 border-2 border-brand-primary border-t-transparent rounded-full animate-spin' />
           </div>
         ) : null}
-        <MonthlyHistoryList entries={displayEntries} />
+        <MonthlyHistoryList
+          entries={displayEntries}
+          selectedMonthLabel={selectedMonth}
+          onMonthSelect={setSelectedMonth}
+        />
         <div className='grid grid-cols-1 gap-4 mt-6'>
           <div className='bg-brand-card rounded-[20px] p-4 border border-brand-background'>
             <div className='flex items-center justify-between mb-3'>
-              <h3 className='text-[14px] font-bold text-brand-text'>Income</h3>
+              <div className='flex items-center gap-2'>
+                <h3 className='text-[14px] font-bold text-brand-text'>Income</h3>
+                {selectedMonth && (
+                  <span className='text-[10px] px-2 py-0.5 rounded-full bg-[#B4DE0020] text-[#B4DE00]'>
+                    {selectedMonth}
+                  </span>
+                )}
+              </div>
               <span className='text-[11px] text-[#B4DE00] font-semibold'>BY CATEGORY</span>
             </div>
             <CategoryBarChart categories={incomeCategories} loading={categoryLoading} type='income' />
@@ -101,7 +120,14 @@ export function Insights() {
 
           <div className='bg-brand-card rounded-[20px] p-4 border border-brand-background'>
             <div className='flex items-center justify-between mb-3'>
-              <h3 className='text-[14px] font-bold text-brand-text'>Expenses</h3>
+              <div className='flex items-center gap-2'>
+                <h3 className='text-[14px] font-bold text-brand-text'>Expenses</h3>
+                {selectedMonth && (
+                  <span className='text-[10px] px-2 py-0.5 rounded-full bg-[#FF4D4D20] text-[#FF4D4D]'>
+                    {selectedMonth}
+                  </span>
+                )}
+              </div>
               <span className='text-[11px] text-[#FF4D4D] font-semibold'>BY CATEGORY</span>
             </div>
             <CategoryBarChart categories={expenseCategories} loading={categoryLoading} type='expense' />

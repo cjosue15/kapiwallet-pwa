@@ -51,7 +51,6 @@ export function MonthlyHistoryList({ entries, selectedMonthLabel, onMonthSelect 
   return (
     <div className='bg-brand-card rounded-[24px] p-3 border border-brand-background'>
       {computedEntries.map((entry, index) => {
-        console.log({ entry });
         const changePositive = entry.change >= 0;
         const changeValue = Math.abs(entry.change);
         const subLabel =
